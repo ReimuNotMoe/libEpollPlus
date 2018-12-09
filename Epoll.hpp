@@ -1,6 +1,14 @@
-//
-// Created by root on 18-12-5.
-//
+/*
+    This file is part of libEpollPlus.
+    Copyright (C) 2018 ReimuNotMoe
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the MIT License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 
 #ifndef LIBEPOLLPLUS_EPOLL_HPP
 #define LIBEPOLLPLUS_EPOLL_HPP
@@ -30,7 +38,7 @@ namespace EpollPlus {
 	}
 
 	void Add(const EpollEvent<T> &__ev) {
-		if (epoll_ctl(fd_epoll, EPOLL_CTL_ADD, __ev.FD(), __ev.RawEvent())) {
+		if (epoll_ctl(fd_epoll, EPOLL_CTL_ADD, __ev.FD(), __ev.RawEvent().get())) {
 			throw std::system_error(errno, std::system_category(), strerror(errno));
 		}
 
@@ -51,7 +59,7 @@ namespace EpollPlus {
 	}
 
 	void Modify(const EpollEvent<T> &__ev) {
-		if (epoll_ctl(fd_epoll, EPOLL_CTL_MOD, __ev.FD(), __ev.RawEvent())) {
+		if (epoll_ctl(fd_epoll, EPOLL_CTL_MOD, __ev.FD(), __ev.RawEvent().get())) {
 			throw std::system_error(errno, std::system_category(), strerror(errno));
 		}
 	}
@@ -59,8 +67,8 @@ namespace EpollPlus {
 	std::vector<EpollEvent<T>> Wait(int maxevents=64, int timeout=-1, const sigset_t *sigmask=nullptr) {
 		std::vector<EpollEvent<T>> ret;
 
-		auto ep_events = new epoll_event[maxevents];
-		auto sptr_events = std::shared_ptr<epoll_event>(ep_events, std::default_delete<epoll_event[]>());
+		epoll_event ep_events[maxevents];
+//		auto sptr_events = std::shared_ptr<epoll_event>(ep_events, std::default_delete<epoll_event[]>());
 
 		int rc = epoll_pwait(fd_epoll, ep_events, maxevents, timeout, sigmask);
 
@@ -73,7 +81,7 @@ namespace EpollPlus {
 
 			assert(it_sptr_kept != ptr_keeper.end());
 
-			EpollEvent<T> this_event(sptr_events, it_sptr_kept->second, j);
+			EpollEvent<T> this_event(this_raw_event.events, it_sptr_kept->second);
 			ret.emplace_back(this_event);
 		}
 

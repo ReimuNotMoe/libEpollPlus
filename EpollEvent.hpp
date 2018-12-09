@@ -1,6 +1,14 @@
-//
-// Created by root on 18-12-5.
-//
+/*
+    This file is part of libEpollPlus.
+    Copyright (C) 2018 ReimuNotMoe
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the MIT License.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
 
 #ifndef LIBEPOLLPLUS_EPOLLEVENT_HPP
 #define LIBEPOLLPLUS_EPOLLEVENT_HPP
@@ -13,11 +21,8 @@ namespace EpollPlus {
     class EpollEvent {
     private:
 	int fd = -1;
-	epoll_event *raw_event = nullptr;
-	bool is_existing_raw_metadata = false;
-	std::shared_ptr<epoll_event> sptr_raw_events_array;
+	uint32_t events = 0;
 	std::shared_ptr<RawMetaData> sptr_raw_metadata;
-	size_t pos_rawevents = 0;
 
     public:
 	EpollEvent() = default;
@@ -27,82 +32,85 @@ namespace EpollPlus {
 //		memcpy(raw_event, &__event, sizeof(epoll_event));
 //	}
 
-	EpollEvent(const std::shared_ptr<epoll_event> &__sptr_rawevents_array, const std::shared_ptr<RawMetaData> &__sptr_rawmetadata, size_t __pos) {
-		is_existing_raw_metadata = true;
-		sptr_raw_events_array = __sptr_rawevents_array;
+	EpollEvent(const uint32_t __events, const std::shared_ptr<RawMetaData> &__sptr_rawmetadata) {
+		events = __events;
 		sptr_raw_metadata = __sptr_rawmetadata;
-		pos_rawevents = __pos;
-		raw_event = sptr_raw_events_array.get() + sizeof(epoll_event) * __pos;
 		fd = (*sptr_raw_metadata).fd;
 	}
 
-	EpollEvent(int user_fd, T *user_data, uint32_t events) {
+	EpollEvent(int user_fd, T *user_data, uint32_t __events) {
 		fd = user_fd;
-		raw_event = new epoll_event();
+		events = __events;
 
 		sptr_raw_metadata = std::make_shared<RawMetaData>();
 		auto raw_metadata = sptr_raw_metadata.get();
 
 		raw_metadata->fd = fd;
 		raw_metadata->data.ptr = user_data;
-		raw_event->data.ptr = (void *)raw_metadata;
-
-		raw_event->events = events;
-	}
-
-	~EpollEvent() {
-		if (raw_event) {
-			if (!is_existing_raw_metadata)
-				delete raw_event;
-		}
 	}
 
 	T* const UserData() const {
 		return reinterpret_cast<T *>((*sptr_raw_metadata).data.ptr);
 	}
 
-	void UserData(T *ptr) {
+	EpollEvent &SetUserData(T *ptr) {
 		(*sptr_raw_metadata).data.ptr = ptr;
+		return *this;
 	}
 
 	int FD() const {
 		return fd;
 	}
 
+	EpollEvent &SetFD(int __fd) {
+		fd = __fd;
+		return *this;
+	}
+
 	const std::shared_ptr<RawMetaData> &RawUserData () const {
 		return sptr_raw_metadata;
 	}
 
-	epoll_event *RawEvent() const {
-		return raw_event;
+	std::shared_ptr<epoll_event> RawEvent() const {
+		auto ret = std::make_shared<epoll_event>();
+
+		(*ret).events = events;
+		(*ret).data.ptr = sptr_raw_metadata.get();
+
+		return ret;
 	};
 
 	const uint32_t Events() {
-		return raw_event->events;
+		return events;
+	}
+
+	EpollEvent &SetEvents(uint32_t __events) {
+		events = __events;
+		return *this;
 	}
 
 	uint32_t operator& (uint32_t rhs) {
-		return raw_event->events & rhs;
+		return events & rhs;
 	}
 
 	uint32_t operator| (uint32_t rhs) {
-		return raw_event->events | rhs;
+		return events | rhs;
 	}
 
 	uint32_t operator&= (uint32_t rhs) {
-		return (raw_event->events &= rhs);
+		return (events &= rhs);
 	}
 
 	uint32_t operator|= (uint32_t rhs) {
-		return (raw_event->events |= rhs);
+		return (events |= rhs);
 	}
 
 	bool operator== (const EpollEvent& rhs) {
-		return (raw_event->events == rhs.raw_event->events) && (raw_event->data.ptr == rhs.raw_event->data.ptr);
+		return (events == rhs.events) && (sptr_raw_metadata == rhs.sptr_raw_metadata);
 	}
 
 	bool operator!= (const EpollEvent& rhs) {
-		return (raw_event->events != rhs.raw_event->events) || (raw_event->data.ptr != rhs.raw_event->data.ptr);
+		return (events != rhs.events) || (sptr_raw_metadata != rhs.sptr_raw_metadata);
 	}
 
 	void aaa() {
