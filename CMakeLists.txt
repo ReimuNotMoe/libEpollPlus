@@ -1,11 +1,29 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.8)
 project(libEpollPlus)
 
 set(CMAKE_CXX_STANDARD 11)
+set(PROJECT_VERSION "0.1.1")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "1")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "An easy-to-use C++ epoll library")
+set(CPACK_PACKAGE_CONTACT "Reimu NotMoe <https://github.com/ReimuNotMoe>")
+set(CPACK_PACKAGE_NAME "libepollplus-dev")
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/ReimuNotMoe/libEpollPlus")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${CMAKE_PROJECT_HOMEPAGE_URL})
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-dev_${PROJECT_VERSION}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE})
+set(CPACK_DEBIAN_DEBUGINFO_PACKAGE yes)
+set(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
+set(CPACK_GENERATOR "DEB;RPM;TXZ")
+set(CPACK_SOURCE_GENERATOR "DEB;RPM;TXZ")
+include(CPack)
+
+include(GNUInstallDirs)
 
 set(SOURCE_FILES EpollPlus.cpp EpollPlus.hpp CommonIncludes.hpp EpollEvent.hpp Epoll.hpp)
 add_library(EpollPlus ${SOURCE_FILES})
-
 
 add_executable(EpollPlus_test test.cpp)
 
