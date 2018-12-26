@@ -1,8 +1,5 @@
 image: ubuntu:18.04
 
-before_script:
-  - apt-get update && apt-get -y install build-essential cmake
-
 stages:
   - build
   - test
@@ -10,23 +7,26 @@ stages:
 
 build:
   stage: build
+  before_script:
+    - apt-get update && apt-get -y install build-essential cmake
   artifacts:
     untracked: true
   script:
     - mkdir build && cd build && cmake .. && make
-
 
 test:
   stage: test
   dependencies:
     - build
   script:
-    - cd build && yes|./EpollPlus_test
+    - cd build && yes|./EpollPlus_test && return 0
 
 package:
   stage: package
   dependencies:
     - test
+  before_script:
+    - apt-get update && apt-get -y install build-essential cmake
   script:
     - cd build && make package
   artifacts:
