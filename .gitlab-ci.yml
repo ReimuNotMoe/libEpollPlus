@@ -1,0 +1,35 @@
+before_script:
+  - apt-get update && apt-get -y install build-essential cmake
+
+stages:
+  - build
+
+build-ubuntu-18.04:
+  stage: build
+  image: ubuntu:18.04
+  script:
+  - mkdir build && cd build && cmake .. && make
+
+build-ubuntu-17.10:
+  stage: build
+  image: ubuntu:17.10
+  script:
+  - mkdir build && cd build && cmake .. && make
+
+build-ubuntu-17.04:
+  stage: build
+  image: ubuntu:17.04
+  script:
+  - mkdir build && cd build && cmake .. && make
+
+build-ubuntu-16.10:
+  stage: build
+  image: ubuntu:16.10
+  script:
+  - mkdir build && cd build && cmake .. && make
+
+build-ubuntu-16.04:
+  stage: build
+  image: ubuntu:16.04
+  script:
+  - mkdir build && cd build && cmake .. && make
