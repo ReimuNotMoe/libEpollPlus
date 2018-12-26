@@ -27,7 +27,7 @@ package:
   dependencies:
     - build
   before_script:
-    - apt-get update && apt-get -y install build-essential cmake
+    - apt-get update && apt-get -y install build-essential cmake rpm
   script:
     - cd build && make package
   artifacts:
