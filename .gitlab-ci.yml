@@ -19,12 +19,13 @@ test:
   dependencies:
     - build
   script:
-    - cd build && yes|./EpollPlus_test && return 0
+    - cd build
+    - sh -c 'yes | ./EpollPlus_test'
 
 package:
   stage: package
   dependencies:
-    - test
+    - build
   before_script:
     - apt-get update && apt-get -y install build-essential cmake
   script:
