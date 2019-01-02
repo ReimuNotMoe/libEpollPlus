@@ -75,7 +75,7 @@ namespace EpollPlus {
 		return ret;
 	};
 
-	const uint32_t Events() {
+	const uint32_t Events() const {
 		return events;
 	}
 
@@ -84,11 +84,11 @@ namespace EpollPlus {
 		return *this;
 	}
 
-	uint32_t operator& (uint32_t rhs) {
+	uint32_t operator& (uint32_t rhs) const {
 		return events & rhs;
 	}
 
-	uint32_t operator| (uint32_t rhs) {
+	uint32_t operator| (uint32_t rhs) const {
 		return events | rhs;
 	}
 
@@ -100,11 +100,11 @@ namespace EpollPlus {
 		return (events |= rhs);
 	}
 
-	bool operator== (const EpollEvent& rhs) {
+	bool operator== (const EpollEvent& rhs) const {
 		return (events == rhs.events) && (sptr_raw_metadata == rhs.sptr_raw_metadata);
 	}
 
-	bool operator!= (const EpollEvent& rhs) {
+	bool operator!= (const EpollEvent& rhs) const {
 		return (events != rhs.events) || (sptr_raw_metadata != rhs.sptr_raw_metadata);
 	}
 
@@ -174,7 +174,7 @@ namespace EpollPlus {
 		return ret;
 	};
 
-	const uint32_t Events() {
+	const uint32_t Events() const {
 		return events;
 	}
 
@@ -183,11 +183,11 @@ namespace EpollPlus {
 		return *this;
 	}
 
-	uint32_t operator& (uint32_t rhs) {
+	uint32_t operator& (uint32_t rhs) const {
 		return events & rhs;
 	}
 
-	uint32_t operator| (uint32_t rhs) {
+	uint32_t operator| (uint32_t rhs) const {
 		return events | rhs;
 	}
 
@@ -199,11 +199,11 @@ namespace EpollPlus {
 		return (events |= rhs);
 	}
 
-	bool operator== (const EpollEvent& rhs) {
+	bool operator== (const EpollEvent& rhs) const {
 		return (events == rhs.events) && (sptr_raw_metadata == rhs.sptr_raw_metadata);
 	}
 
-	bool operator!= (const EpollEvent& rhs) {
+	bool operator!= (const EpollEvent& rhs) const {
 		return (events != rhs.events) || (sptr_raw_metadata != rhs.sptr_raw_metadata);
 	}
 
